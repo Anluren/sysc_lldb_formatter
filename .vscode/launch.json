@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug SystemC Example",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/test_example",
+            "args": [],
+            "cwd": "${workspaceFolder}/examples",
+            "preLaunchTask": "Build SystemC Example",
+            "initCommands": [
+                "command script import ${workspaceFolder}/sysc_lldb_formatter"
+            ],
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "Attach to Process",
+            "type": "lldb",
+            "request": "attach",
+            "pid": "${command:pickProcess}",
+            "initCommands": [
+                "command script import ${workspaceFolder}/sysc_lldb_formatter"
+            ]
+        }
+    ]
+}

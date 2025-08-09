@@ -1,0 +1,13 @@
+# SystemC LLDB Formatters - Requirements
+#
+# This package has no external Python dependencies as it uses
+# LLDB's built-in Python API. However, you need:
+#
+# 1. LLDB with Python scripting support
+# 2. SystemC library (for testing)
+#
+# Development dependencies (optional):
+pytest>=6.0
+black>=21.0
+flake8>=3.8
+mypy>=0.910
