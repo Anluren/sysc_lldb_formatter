@@ -1,0 +1,39 @@
+# LLDB script to test SystemC formatters
+# This script loads the formatter, sets breakpoints, and demonstrates the formatting
+
+# Load the SystemC formatter
+command script import ../sysc_lldb_formatter
+
+# Set a breakpoint at the main function
+breakpoint set --name sc_main
+
+# Run the program
+run
+
+# Continue to the breakpoint where variables are defined
+continue
+
+# Show all variables with formatting
+frame variable
+
+# Show specific variables with detailed output
+print val_8bit
+print val_16bit 
+print val_32bit
+print val_64bit
+print val_1bit
+
+print signed_8bit
+print signed_16bit
+print signed_32bit  
+print signed_64bit
+print signed_1bit
+
+# Use the debug command for detailed analysis
+sc_debug val_8bit
+sc_debug signed_8bit
+
+# Show the memory layout
+memory read --size 8 --count 4 --format x `&val_8bit`
+
+print "SystemC LLDB Formatter test completed successfully!"

@@ -308,13 +308,17 @@ def __lldb_init_module(debugger, internal_dict: dict):
         'type summary add -F sysc_lldb_formatter.formatters.sc_int_summary_provider "sc_dt::sc_int<*>"'
     )
     
-    # Register debug command
-    debugger.HandleCommand(
-        'command script add -f sysc_lldb_formatter.formatters.sc_debug_command sc_debug'
-    )
+    # Register debug command - Note: sc_debug command removed due to issues
+    # Users can call the function directly:
+    # script sysc_lldb_formatter.formatters.sc_debug_command(debugger,
+    #        "variable_name", None, None)
     
     print("SystemC LLDB formatters loaded successfully!")
     print("Usage:")
     print("  - sc_uint and sc_int variables will be automatically formatted")
-    print("  - Use 'sc_debug <variable>' for detailed analysis")
+    print("  - Variables will show as: sc_uint<8>(66) instead of "
+          "<incomplete type>")
     print("  - Supports all bit widths: sc_uint<8>, sc_int<32>, etc.")
+    print("  - For detailed analysis, use:")
+    print("    script sysc_lldb_formatter.formatters.sc_debug_command("
+          "debugger, 'variable_name', None, None)")
