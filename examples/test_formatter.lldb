@@ -6,6 +6,7 @@ command script import ../sysc_lldb_formatter
 
 # Set a breakpoint at the main function
 breakpoint set --name sc_main
+breakpoint set --file test_example.cpp --line 51
 
 # Run the program
 run
