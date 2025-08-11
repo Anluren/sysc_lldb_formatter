@@ -235,6 +235,35 @@ Both formatters provide `sc_debug` commands for detailed analysis:
 - **GDB with Python support** (for GDB formatter)  
 - **SystemC library** (for compilation/testing)
 
+## Documentation
+
+- **[GDB_PYTHON_SUPPORT.md](GDB_PYTHON_SUPPORT.md)** - Comprehensive guide to GDB Python support
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Quick troubleshooting guide
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Complete project overview
+
+## Python Support Verification
+
+Before using the formatters, verify your GDB has Python support:
+
+```bash
+# Quick test
+gdb -batch -ex "python print('Python works!')" -ex "quit"
+
+# Comprehensive test
+gdb -batch -x test_python_setup.gdb
+
+# In GDB session
+(gdb) source sysc_gdb_formatter.py
+(gdb) sc_python_check
+```
+
+**Common Issues:**
+- **"Undefined command: python"** → Install GDB with Python support
+- **"No module named 'gdb'"** → Reinstall GDB or check Python version
+- **"No current object file"** → Load your program first (`gdb your_program`)
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed solutions.
+
 ## License
 
 MIT License - See LICENSE file for details.

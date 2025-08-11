@@ -23,6 +23,59 @@ import gdb.printing
 import struct
 
 
+def check_gdb_python_support():
+    """
+    Check if GDB has Python scripting support enabled.
+    
+    This function verifies that the current GDB installation supports Python
+    scripting, which is required for the SystemC pretty-printers to function.
+    
+    Returns:
+        bool: True if Python support is available, False otherwise.
+        
+    Note:
+        This function should be called before attempting to register
+        pretty-printers to ensure compatibility. If Python support is not
+        available, the formatters will not work and GDB will show error
+        messages.
+    """
+    try:
+        # Try to access a Python-specific GDB feature
+        gdb.VERSION
+        return True
+    except AttributeError:
+        return False
+
+
+def print_python_support_info():
+    """
+    Print information about GDB Python support status.
+    
+    This function checks Python support and provides helpful information
+    to the user about their GDB configuration and what to do if Python
+    support is missing.
+    """
+    if check_gdb_python_support():
+        print("✓ GDB Python support detected - SystemC formatters will work")
+        try:
+            import sys
+            version = f"{sys.version_info.major}.{sys.version_info.minor}"
+            print(f"✓ Python version: {version}")
+        except Exception:
+            print("✓ Python version: unknown")
+    else:
+        print("✗ GDB Python support NOT detected")
+        print("  SystemC formatters require GDB with Python scripting "
+              "support.")
+        print("  Please install a GDB version with Python support:")
+        print("  - Ubuntu/Debian: apt install gdb")
+        print("  - RedHat/CentOS: yum install gdb")
+        print("  - macOS: brew install gdb")
+        print("  - Or compile GDB with --with-python option")
+        return False
+    return True
+
+
 class SystemCFormatterBase:
     """
     Base class for SystemC GDB pretty-printers.
@@ -270,23 +323,113 @@ class SystemCDebugCommand(gdb.Command):
             print(f"Error: {e}")
 
 
+class SystemCPythonCheckCommand(gdb.Command):
+    """
+    GDB command to check Python support for SystemC formatters.
+    
+    This command verifies that GDB has proper Python scripting support
+    and provides diagnostic information about the SystemC formatter
+    environment.
+    
+    Usage: sc_python_check
+    """
+    
+    def __init__(self):
+        """Initialize the Python check command."""
+        super().__init__("sc_python_check", gdb.COMMAND_USER)
+    
+    def invoke(self, argument, from_tty):
+        """Execute the Python support check command."""
+        print("\n=== SystemC GDB Python Support Check ===")
+        
+        # Check basic Python support
+        if not print_python_support_info():
+            return
+        
+        # Check GDB version
+        try:
+            print(f"✓ GDB version: {gdb.VERSION}")
+        except Exception:
+            print("✓ GDB version: unknown")
+        
+        # Check if pretty-printers are registered
+        try:
+            objfile = gdb.current_objfile()
+            if objfile:
+                print("✓ Object file available for pretty-printer registration")
+            else:
+                print("⚠ No current object file (load a program first)")
+        except Exception as e:
+            print(f"⚠ Object file check failed: {e}")
+        
+        # Check SystemC formatter availability
+        try:
+            pp = build_pretty_printer()
+            print("✓ SystemC pretty-printers can be built")
+            print(f"✓ Registered printers: {len(pp.subprinters)} types")
+        except Exception as e:
+            print(f"✗ Error building pretty-printers: {e}")
+        
+        print("\nSystemC formatter environment looks good!")
+        print("Usage: source sysc_gdb_formatter.py to load formatters")
+
+
 # Register the pretty-printers and commands
 def register_systemc_printers():
-    """Register SystemC pretty-printers with GDB."""
-    # Register the pretty-printer
-    gdb.printing.register_pretty_printer(
-        gdb.current_objfile(),
-        build_pretty_printer(),
-        replace=True
-    )
+    """
+    Register SystemC pretty-printers with GDB.
     
-    # Register the debug command
-    SystemCDebugCommand()
+    This function sets up the SystemC debugging environment by:
+    1. Checking for GDB Python support
+    2. Registering pretty-printers for SystemC data types with GDB
+    3. Registering custom debug commands for SystemC analysis
+    4. Providing user feedback on successful registration
     
-    print("SystemC GDB formatters loaded successfully!")
-    print("Usage:")
-    print("  - sc_uint and sc_int variables will be automatically formatted")
-    print("  - Use 'sc_debug <variable>' for detailed analysis")
+    The function registers pretty-printers for automatic formatting of SystemC
+    types like sc_uint and sc_int, and adds a custom 'sc_debug' command for
+    detailed variable analysis.
+    
+    Note:
+        This function should be called once during GDB initialization to enable
+        SystemC-specific debugging features.
+        
+    Raises:
+        Exception: If GDB pretty-printer registration fails or if the current
+                  object file is not available.
+    """
+    # Check Python support first
+    if not check_gdb_python_support():
+        print_python_support_info()
+        return
+    
+    try:
+        # Register the pretty-printer
+        gdb.printing.register_pretty_printer(
+            gdb.current_objfile(),
+            build_pretty_printer(),
+            replace=True
+        )
+        
+        # Register the debug command
+        SystemCDebugCommand()
+        
+        # Register the Python check command
+        SystemCPythonCheckCommand()
+        
+        print("SystemC GDB formatters loaded successfully!")
+        print_python_support_info()
+        print("Usage:")
+        print("  - sc_uint and sc_int variables will be automatically "
+              "formatted")
+        print("  - Use 'sc_debug <variable>' for detailed analysis")
+        print("  - Use 'sc_python_check' to verify Python support")
+        
+    except Exception as e:
+        print(f"Error registering SystemC formatters: {e}")
+        print("This may happen if:")
+        print("  - No object file is currently loaded")
+        print("  - GDB Python support is incomplete")
+        print("  - Try loading after running your program")
 
 
 # Auto-register when the module is imported
