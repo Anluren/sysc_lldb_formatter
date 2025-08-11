@@ -1,13 +1,19 @@
-# 🎉 SystemC LLDB Formatter - Simple & Effective!
+# 🎉 SystemC Debugger Formatters - Complete Solution!
 
 ## Project Overview
 
-A **single, powerful Python script** that solves the SystemC "incomplete type" problem in LLDB! This streamlined solution provides comprehensive SystemC debugging support without the complexity of package management.
+**Powerful Python scripts** that solve the SystemC "incomplete type" problem in both **LLDB** and **GDB** debuggers! This comprehensive solution provides SystemC debugging support for all major debugging environments without complex package management.
 
-### 📁 Project Structure (Simplified)
+### 📁 Project Structure (Complete Debugger Support)
 ```
 sysc_lldb_formatter/
-├── � sysc_lldb_formatter.py  # MAIN SCRIPT - All functionality in one file
+├── 🔧 sysc_lldb_formatter.py  # LLDB formatter - Complete LLDB solution  
+├── 🔧 sysc_gdb_formatter.py   # GDB formatter - Complete GDB solution
+├── 🧪 test_gdb_setup.py       # GDB test file generator
+├── 📖 README_GDB.md           # Complete GDB documentation  
+├── 📋 Makefile.gdb           # GDB build and test automation
+├── 🧪 test_systemc_gdb.cpp   # GDB test program
+├── 📋 test_gdb_script.gdb    # GDB automated test script
 ├── 📖 docs/                    # Documentation
 │   └── USAGE.md               # Detailed usage guide
 ├── 🧪 examples/               # Test examples and demos
@@ -15,6 +21,8 @@ sysc_lldb_formatter/
 │   ├── test_example           # Compiled test executable
 │   ├── Makefile              # Build configuration
 │   └── *.lldb                # LLDB test scripts
+├── 🌐 utilities/              # Additional utilities
+│   └── network_data.py       # Network packet analysis utilities
 ├── ⚙️ .vscode/                # VS Code configuration
 │   ├── tasks.json            # Build tasks
 │   └── launch.json           # Debug configurations
@@ -27,62 +35,73 @@ sysc_lldb_formatter/
 └── 🧪 Various test scripts    # LLDB testing and verification files
 ```
 
-## ✨ Key Features - All in One Script!
+## ✨ Key Features - Complete Debugger Support!
 
-### 🔍 **Complete LLDB Formatting Solution** 
-- ✅ **Single file deployment** - Just copy `sysc_lldb_formatter.py` and you're ready!
+### 🔍 **Complete LLDB & GDB Formatting Solution** 
+- ✅ **Dual debugger support** - Both LLDB and GDB formatters available!
+- ✅ **Single file deployment** - Just copy the appropriate formatter and you're ready!
 - ✅ **Memory-based value extraction** (reads at offset +8 bytes)
 - ✅ **All bit widths supported** (1-64 bits) with proper masking
 - ✅ **Proper sign extension** for signed types with two's complement
-- ✅ **Automatic type detection** and registration with LLDB
-- ✅ **Debug command** for detailed analysis (`sc_debug`)
+- ✅ **Automatic type detection** and registration with debuggers
+- ✅ **Debug commands** for detailed analysis (`sc_debug` in both LLDB and GDB)
 - ✅ **Error handling** for invalid memory access and edge cases
 - ✅ **Working solution** that shows `sc_uint<8>(66)` instead of `<incomplete type>`
 
 ### � **Simple & Effective Design**
-- ✅ **No package complexity** - one Python file contains everything
-- ✅ **No installation required** - just copy and import the script
-- ✅ **Self-contained** - all classes and functions in a single file
+- ✅ **No package complexity** - separate Python files for LLDB and GDB
+- ✅ **No installation required** - just copy and import the appropriate script
+- ✅ **Self-contained** - all classes and functions in single files
 - ✅ **Comprehensive documentation** - extensive docstrings and type hints
+- ✅ **Cross-debugger compatibility** - same functionality in both environments
 - ✅ **MIT license** for open source distribution
 
 ### 🛠️ **Development Support & Testing**
 - ✅ **VS Code integration** with tasks and debugging configurations
-- ✅ **Example programs** with comprehensive test cases
+- ✅ **Example programs** with comprehensive test cases for both debuggers
 - ✅ **Git repository** with version control and commit history
 - ✅ **Verification report** documenting all successful tests
-- ✅ **Multiple test scripts** for different use cases
+- ✅ **Multiple test scripts** for different use cases and debuggers
+- ✅ **Network utilities** for additional data analysis capabilities
 
-## 🚀 Quick Start - Simple & Fast!
+## 🚀 Quick Start - Choose Your Debugger!
 
-### 1. **Get the Script** ✅ One File Solution
+### 1. **LLDB Formatter** ✅ One File Solution
 ```bash
 # Just copy the single file - that's it!
 cp sysc_lldb_formatter.py /path/to/your/project/
-# OR download directly from the repository
-```
-
-### 2. **Use with LLDB** ✅ Instant Results  
-```bash
 lldb examples/test_example
 (lldb) command script import sysc_lldb_formatter.py
 # Output: SystemC formatters loaded successfully!
+```
+
+### 2. **GDB Formatter** ✅ One File Solution  
+```bash
+# Copy the GDB formatter
+cp sysc_gdb_formatter.py /path/to/your/project/
+gdb examples/test_example
+(gdb) source sysc_gdb_formatter.py
+# Output: SystemC GDB formatters loaded successfully!
+```
+
+### 3. **Test Both Debuggers** ✅ Instant Results
+```bash
+# LLDB Usage
 (lldb) breakpoint set --name sc_main
 (lldb) run
 (lldb) frame variable uint8_val
 # Output: (sc_uint<8>) uint8_val = sc_uint<8>(66)  # NO MORE <incomplete type>!
+
+# GDB Usage  
+(gdb) break main
+(gdb) run
+(gdb) print uint8_val
+# Output: sc_uint<8>(66)  # NO MORE <incomplete type>!
 ```
 
-### 3. **Build Example Program** ✅ Test It Out
+### 4. **Debug Analysis** ✅ Full Memory Inspection (Both Debuggers)
 ```bash
-cd examples/
-export SYSTEMC_HOME=/path/to/your/systemc
-make test_example
-# Output: test_example executable created
-```
-
-### 4. **Debug Analysis** ✅ Full Memory Inspection
-```bash
+# LLDB
 (lldb) sc_debug uint8_val
 # Output: 
 # === SystemC Variable Analysis: uint8_val ===
@@ -92,6 +111,10 @@ make test_example
 # Width: 8
 # Address: 0x7fffffffd3c0
 # Value memory (+8): 42 00 00 00 00 00 00 00
+
+# GDB
+(gdb) sc_debug uint8_val  
+# Output: Same detailed analysis in GDB!
 ```
 
 ## 🎯 What You Can Do Now - Simple & Powerful!
