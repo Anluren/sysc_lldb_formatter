@@ -3,6 +3,24 @@
 import lldb
 
 class SystemCFormatterBase:
+    """
+    Base formatter class for SystemC integer types in LLDB debugger.
+    This class provides common functionality for formatting SystemC sc_int and sc_uint
+    types by extracting their template width parameters and reading their raw values
+    from memory. It handles both signed and unsigned integer types with proper
+    sign extension and bit masking based on the declared width.
+    The formatter works by analyzing the memory layout of SystemC objects and
+    reading the actual integer values stored at a specific offset (+8 bytes)
+    from the object's base address.
+    Attributes:
+        valobj: LLDB SBValue object representing the SystemC variable
+        width: Template width parameter extracted from the type name
+    Methods:
+        extract_template_width(): Parses type name to get width (e.g., sc_uint<8> -> 8)
+        get_raw_value(): Reads the actual integer value from object memory
+        mask_value(): Applies width-based masking and sign extension
+        is_signed(): Determines if the type is signed (sc_int) or unsigned (sc_uint)
+    """
     def __init__(self, valobj, internal_dict):
         self.valobj = valobj
         self.width = self.extract_template_width()
@@ -21,6 +39,27 @@ class SystemCFormatterBase:
         return 64  # default width
     
     def get_raw_value(self):
+        """Get raw value from SystemC object using known memory layout.
+        This method reads the actual value stored in a SystemC object by directly
+        accessing memory at a known offset (+8 bytes from the base address). It
+        handles both signed and unsigned integer types with proper bit width
+        consideration.
+        The method performs the following steps:
+        1. Gets the base address of the SystemC object
+        2. Calculates the value address by adding 8-byte offset
+        3. Reads memory based on the data width (1, 2, 4, or 8 bytes)
+        4. Converts bytes to integer with appropriate signedness
+        Returns:
+            int or None: The extracted integer value if successful, None if:
+                - The object address is invalid
+                - Memory read operation fails
+                - Any exception occurs during processing
+        Note:
+            This implementation relies on specific memory layout knowledge of
+            SystemC objects and uses little-endian byte order for interpretation.
+            The width and signedness are determined by helper methods is_signed()
+            and the width attribute.
+        """
         """Get raw value from SystemC object using known memory layout"""
         try:
             # Based on memory analysis, the actual value is stored at offset +8 bytes
@@ -103,6 +142,23 @@ class SystemCFormatterBase:
         return "sc_int<" in self.valobj.GetType().GetName()
 
 class SCUintFormatter(SystemCFormatterBase):
+    """
+    Formatter for SystemC sc_uint types in LLDB debugger.
+    This formatter provides a custom display representation for SystemC sc_uint objects
+    during debugging sessions. It inherits from SystemCFormatterBase and implements
+    the necessary methods to format sc_uint values with proper width information and
+    value masking.
+    The formatter extracts the raw value from the sc_uint object, applies appropriate
+    width masking, and presents it in a readable format: sc_uint<width>(value).
+    Methods:
+        __init__(valobj, internal_dict): Initialize the formatter with LLDB value object
+        update(): Update method (currently no-op)
+        has_children(): Returns False as sc_uint has no child elements to display
+        get_value(): Returns formatted string representation of the sc_uint value
+    Returns:
+        Formatted string in the form "sc_uint<width>(value)" or error messages for
+        invalid/unknown values.
+    """
     def __init__(self, valobj, internal_dict):
         super().__init__(valobj, internal_dict)
         
@@ -125,6 +181,25 @@ class SCUintFormatter(SystemCFormatterBase):
             return f"sc_uint<{self.width}>(<error: {e}>)"
 
 class SCIntFormatter(SystemCFormatterBase):
+    """
+    Formatter for SystemC sc_int types in LLDB debugger.
+    This formatter provides a custom display representation for SystemC sc_int objects,
+    showing the templated width and the actual integer value with proper masking and
+    sign extension applied.
+    The formatter inherits from SystemCFormatterBase and implements the required
+    interface methods for LLDB type summaries. It displays sc_int values in the
+    format: sc_int<width>(value)
+    Attributes:
+        Inherits all attributes from SystemCFormatterBase including valobj and width.
+    Methods:
+        update(): Required LLDB formatter method (no-op implementation).
+        has_children(): Returns False as sc_int is displayed as a simple value.
+        get_value(): Returns formatted string representation of the sc_int value.
+    Example output:
+        sc_int<8>(42)        - for a valid 8-bit signed integer
+        sc_int<16>(<unknown>) - when value cannot be determined
+        sc_int<32>(<error: ...>) - when an exception occurs during formatting
+    """
     def __init__(self, valobj, internal_dict):
         super().__init__(valobj, internal_dict)
         
@@ -147,14 +222,68 @@ class SCIntFormatter(SystemCFormatterBase):
             return f"sc_int<{self.width}>(<error: {e}>)"
 
 def sc_uint_summary_provider(valobj, internal_dict):
+    """
+    Provides a summary representation for SystemC sc_uint objects in LLDB.
+
+    This function serves as an LLDB summary provider that formats sc_uint values
+    for display in the debugger. It creates an SCUintFormatter instance and
+    retrieves the formatted value representation.
+
+    Args:
+        valobj: The LLDB value object representing the sc_uint instance
+        internal_dict: Internal dictionary used by LLDB for caching and state
+
+    Returns:
+        str: A formatted string representation of the sc_uint value suitable
+             for display in the LLDB debugger
+    """
     formatter = SCUintFormatter(valobj, internal_dict)
     return formatter.get_value()
 
 def sc_int_summary_provider(valobj, internal_dict):
+    """
+    Provides a summary representation for SystemC sc_int objects in LLDB.
+
+    This function serves as an LLDB summary provider that creates a formatted
+    string representation of SystemC sc_int values for display in the debugger.
+
+    Args:
+        valobj: The LLDB SBValue object representing the sc_int instance to format.
+        internal_dict: Internal dictionary used by LLDB for caching and state management.
+
+    Returns:
+        str: A formatted string representation of the sc_int value suitable for
+             display in LLDB's variable view or when printing the object.
+    """
     formatter = SCIntFormatter(valobj, internal_dict)
     return formatter.get_value()
 
 def sc_debug_command(debugger, command, result, internal_dict):
+    """
+    LLDB command to debug and analyze SystemC variables (sc_uint and sc_int types).
+    This command provides detailed analysis of SystemC variables including their
+    formatted values, raw values, width information, and memory layout.
+    Args:
+        debugger (lldb.SBDebugger): The LLDB debugger instance
+        command (str): The variable name to analyze
+        result (lldb.SBCommandReturnObject): Object to store command output
+        internal_dict (dict): Internal dictionary for command state
+    Usage:
+        sc_debug <variable_name>
+    Example:
+        (lldb) sc_debug my_sc_uint_var
+    Output includes:
+        - Variable type information
+        - Formatted value representation
+        - Raw value data
+        - Bit width of the SystemC type
+        - Memory address and layout
+        - Hexadecimal dump of value storage location
+    Note:
+        - Only supports sc_uint<> and sc_int<> SystemC types
+        - Requires a valid debugging session with selected target, process, thread, and frame
+        - Variable must be accessible in the current frame scope
+    """
     """Debug command to analyze SystemC variables with correct memory reading"""
     if not command:
         result.AppendMessage("Usage: sc_debug <variable_name>")
@@ -225,6 +354,20 @@ def sc_debug_command(debugger, command, result, internal_dict):
 
 # Register the formatters
 def __lldb_init_module(debugger, internal_dict):
+    """Initialize LLDB module with SystemC formatters and commands.
+    This function is automatically called by LLDB when the module is loaded.
+    It registers custom summary providers for SystemC data types and adds
+    debug commands for enhanced SystemC debugging experience.
+    Args:
+        debugger: The LLDB debugger instance
+        internal_dict: Internal dictionary for LLDB module state
+    Returns:
+        None
+    Side Effects:
+        - Registers summary providers for sc_uint and sc_int types
+        - Adds 'sc_debug' command to LLDB command interface
+        - Prints initialization success message and usage information
+    """
     # Register summary providers
     debugger.HandleCommand('type summary add -F sysc_lldb_formatter.sc_uint_summary_provider "sc_dt::sc_uint<*>"')
     debugger.HandleCommand('type summary add -F sysc_lldb_formatter.sc_int_summary_provider "sc_dt::sc_int<*>"')
