@@ -1,0 +1,9 @@
+# Test the working SystemC formatter with proper library path
+command script import sysc_lldb_formatter
+breakpoint set --file test_example.cpp --line 51
+run
+frame variable uint8_val int8_val uint16_val int16_val uint32_val int32_val
+sc_debug uint8_val
+sc_debug int8_val
+# frame variable single_bit single_bit_signed odd_width another_odd
+quit
