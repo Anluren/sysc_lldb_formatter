@@ -22,6 +22,72 @@
             "problemMatcher": "$gcc"
         },
         {
+            "label": "build-inheritance-test",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",
+                "-o",
+                "test_inheritance",
+                "test_inheritance.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/examples"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "build-access-test",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",
+                "-o",
+                "test_access_levels",
+                "test_access_levels.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/examples"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "build-enum-test",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",
+                "-o",
+                "test_enum",
+                "test_enum.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/examples"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
             "label": "Clean SystemC Example",
             "type": "shell",
             "command": "make",
@@ -33,6 +99,27 @@
             "presentation": {
                 "echo": true,
                 "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Clean All Test Programs",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-f",
+                "test_inheritance",
+                "test_access_levels",
+                "test_enum"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/examples"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
                 "focus": false,
                 "panel": "shared"
             }

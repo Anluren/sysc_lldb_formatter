@@ -1,6 +1,7 @@
 #include <iostream>
 
 // Base struct
+template <typename T>
 struct BaseStruct {
     int base_value;
     char base_char;
@@ -13,7 +14,7 @@ struct BaseStruct {
 };
 
 // Derived struct
-struct DerivedStruct : public BaseStruct {
+struct DerivedStruct : public BaseStruct <DerivedStruct> {
     float derived_float;
     bool derived_flag;
     
@@ -32,7 +33,7 @@ struct AnotherBase {
     AnotherBase(double val) : another_value(val) {}
 };
 
-struct MultiDerived : public BaseStruct, public AnotherBase {
+struct MultiDerived : public BaseStruct <MultiDerived>, public AnotherBase {
     int multi_int;
     
     MultiDerived(int base_val, char c, double another_val, int multi) 
@@ -41,13 +42,13 @@ struct MultiDerived : public BaseStruct, public AnotherBase {
 
 int main() {
     // Create test objects
-    BaseStruct base_obj(42, 'A');
+    // BaseStruct base_obj(42, 'A');
     DerivedStruct derived_obj(100, 'B', 3.14f, true);
     MultiDerived multi_obj(200, 'C', 2.71, 999);
     
     // Print information
     std::cout << "=== Inheritance Test Objects ===" << std::endl;
-    base_obj.print_info();
+    // base_obj.print_info();
     derived_obj.print_info();
     
     std::cout << "Multi inheritance object:" << std::endl;

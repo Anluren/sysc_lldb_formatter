@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug SystemC Example",
+            "name": "Debug SystemC Example (LLDB)",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/examples/test_example",
@@ -18,12 +18,144 @@
             "externalConsole": false
         },
         {
-            "name": "Attach to Process",
+            "name": "Debug SystemC Example (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/test_example",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/examples",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Load SystemC GDB formatter",
+                    "text": "source ${workspaceFolder}/sysc_gdb_formatter.py",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Load enum pretty printer",
+                    "text": "source ${workspaceFolder}/enum_pretty_printer.py",
+                    "ignoreFailures": false
+                }
+            ],
+            "preLaunchTask": "Build SystemC Example"
+        },
+        {
+            "name": "Debug Inheritance Test (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/test_inheritance",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/examples",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Load inheritance test GDB script",
+                    "text": "source test_inheritance.gdb",
+                    "ignoreFailures": false
+                }
+            ],
+            "preLaunchTask": "build-inheritance-test"
+        },
+        {
+            "name": "Debug Access Levels Test (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/test_access_levels",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}/examples",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Load access level test script",
+                    "text": "source test_access_levels.gdb",
+                    "ignoreFailures": false
+                }
+            ],
+            "preLaunchTask": "build-access-test"
+        },
+        {
+            "name": "Debug Enum Test (GDB)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/test_enum",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/examples",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Load enum pretty printer",
+                    "text": "source ${workspaceFolder}/enum_pretty_printer.py",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Load enum test script",
+                    "text": "source test_enum.gdb",
+                    "ignoreFailures": false
+                }
+            ],
+            "preLaunchTask": "build-enum-test"
+        },
+        {
+            "name": "Attach to Process (LLDB)",
             "type": "lldb",
             "request": "attach",
             "pid": "${command:pickProcess}",
             "initCommands": [
                 "command script import ${workspaceFolder}/sysc_lldb_formatter"
+            ]
+        },
+        {
+            "name": "Attach to Process (GDB)",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/examples/test_example",
+            "processId": "${command:pickProcess}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Load SystemC GDB formatter",
+                    "text": "source ${workspaceFolder}/sysc_gdb_formatter.py",
+                    "ignoreFailures": false
+                },
+                {
+                    "description": "Load enum pretty printer",
+                    "text": "source ${workspaceFolder}/enum_pretty_printer.py",
+                    "ignoreFailures": false
+                }
             ]
         }
     ]
